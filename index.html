@@ -1,1 +1,756 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSpace - Platform Media Ajar Interaktif</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#4f46e5',
+                        primaryHover: '#4338ca',
+                        surface: '#f0f2f5',
+                        cardBg: '#ffffff',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #1f2937;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f0f2f5;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col md:flex-row overflow-hidden">
 
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="w-full md:w-64 bg-white border-r border-gray-200 flex flex-col transition-all duration-300 z-30 md:static fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 shadow-lg md:shadow-none">
+        <div class="p-6 flex items-center justify-between border-b border-gray-100">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-100">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight text-gray-900">EduSpace</h1>
+                    <p class="text-xs text-gray-500 font-medium">Media Ajar Modern</p>
+                </div>
+            </div>
+            <button id="closeSidebar" class="md:hidden text-gray-400 hover:text-gray-600 focus:outline-none">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <a href="#" onclick="switchTab('dashboard')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 bg-primary text-white shadow-sm shadow-indigo-100" data-target="dashboard">
+                <i class="fa-solid fa-house w-5 text-center"></i>
+                <span>Beranda</span>
+            </a>
+            <a href="#" onclick="switchTab('modules')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-target="modules">
+                <i class="fa-solid fa-book-open w-5 text-center"></i>
+                <span>Modul Materi</span>
+            </a>
+            <a href="#" onclick="switchTab('quiz')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-target="quiz">
+                <i class="fa-solid fa-circle-question w-5 text-center"></i>
+                <span>Kuis & Evaluasi</span>
+            </a>
+            <a href="#" onclick="switchTab('worksheet')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-target="worksheet">
+                <i class="fa-solid fa-pen-to-square w-5 text-center"></i>
+                <span>Catatan & LKS</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-gray-100">
+            <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100/60">
+                <div class="flex items-center space-x-3 mb-2">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-primary/20" onerror="this.src='https://placehold.co/100x100/4f46e5/ffffff?text=User'">
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-900">Siti Rahmawati</h4>
+                        <p class="text-[10px] text-indigo-600 font-medium">Siswa Kelas 11 IPA</p>
+                    </div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-1.5 mt-3 overflow-hidden">
+                    <div id="sidebar-progress" class="bg-primary h-1.5 rounded-full transition-all duration-500" style="width: 65%"></div>
+                </div>
+                <div class="flex justify-between items-center mt-1.5">
+                    <span class="text-[10px] text-gray-500">Progres Belajar</span>
+                    <span id="sidebar-progress-text" class="text-[10px] font-bold text-indigo-600">65%</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden bg-surface">
+        <!-- Top Bar -->
+        <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shrink-0 shadow-xs">
+            <div class="flex items-center space-x-4">
+                <button id="openSidebar" class="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div>
+                    <h2 id="page-title" class="text-lg font-bold text-gray-900 tracking-tight">Beranda Overview</h2>
+                    <p id="page-subtitle" class="text-xs text-gray-500">Selamat datang kembali, mari lanjutkan petualangan belajarmu hari ini!</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="relative hidden sm:block">
+                    <input type="text" placeholder="Cari materi atau topik..." class="bg-surface text-sm rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white w-64 transition-all border border-transparent focus:border-indigo-200">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-xs"></i>
+                </div>
+                <button class="relative p-2 rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                    <i class="fa-regular fa-bell text-lg"></i>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Container -->
+        <div class="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
+
+            <!-- TAB 1: DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content space-y-8">
+                <!-- Welcome Banner -->
+                <div class="relative bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-3xl p-8 text-white shadow-xl shadow-indigo-900/10 overflow-hidden flex flex-col md:flex-row justify-between items-center">
+                    <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="relative z-10 max-w-xl space-y-4 mb-6 md:mb-0">
+                        <span class="inline-block bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium tracking-wide text-indigo-100">Fisika Modern & Kuantum</span>
+                        <h2 class="text-2xl md:text-3xl font-bold tracking-tight">Eksplorasi Dunia Fisika Kuantum Bersama EduSpace</h2>
+                        <p class="text-indigo-100 text-sm leading-relaxed opacity-90">Pahami konsep gelombang-partikel, efek fotoelektrik, dan teori relativitas dengan visualisasi interaktif yang mudah dimengerti.</p>
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <button onclick="switchTab('modules')" class="bg-white text-primary hover:bg-indigo-50 font-semibold px-5 py-2.5 rounded-xl text-sm transition-all shadow-sm">
+                                Lanjutkan Belajar <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                            </button>
+                            <button onclick="switchTab('quiz')" class="bg-indigo-700/60 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm border border-indigo-400/30 transition-all">
+                                Kerjakan Kuis <i class="fa-solid fa-pen ml-2 text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="relative z-10 w-48 h-48 md:w-56 md:h-56 bg-white/10 backdrop-blur-md rounded-2xl p-4 flex flex-col items-center justify-center border border-white/20 text-center shadow-inner">
+                        <i class="fa-solid fa-atom text-5xl text-indigo-200 animate-spin" style="animation-duration: 20s;"></i>
+                        <span class="mt-4 font-bold text-sm">Modul Aktif</span>
+                        <span class="text-xs text-indigo-200">Teori Relativitas Khusus</span>
+                    </div>
+                </div>
+
+                <!-- Statistics Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-medium">Modul Selesai</p>
+                            <h3 class="text-xl font-bold text-gray-900 mt-0.5">4 / 6</h3>
+                            <span class="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md mt-1 inline-block">+1 modul minggu ini</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-medium">Skor Rata-rata Kuis</p>
+                            <h3 class="text-xl font-bold text-gray-900 mt-0.5">88.5</h3>
+                            <span class="text-[10px] text-amber-600 font-semibold bg-amber-50 px-2 py-0.5 rounded-md mt-1 inline-block">Sangat Baik</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-medium">Waktu Belajar</p>
+                            <h3 class="text-xl font-bold text-gray-900 mt-0.5">14.5 Jam</h3>
+                            <span class="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md mt-1 inline-block">Target Tercapai</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-medium">Peringkat Kelas</p>
+                            <h3 class="text-xl font-bold text-gray-900 mt-0.5">#3</h3>
+                            <span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-md mt-1 inline-block">Top 5% Siswa</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Modules & Quick Actions -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-base text-gray-900">Modul Pembelajaran Utama</h3>
+                            <button onclick="switchTab('modules')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700">Lihat Semua</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="p-4 rounded-xl border border-gray-100 hover:border-indigo-200 transition-all flex items-center justify-between bg-surface/50">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+                                        <i class="fa-solid fa-wave-square"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-sm text-gray-900">1. Efek Fotoelektrik</h4>
+                                        <p class="text-xs text-gray-500">Mempelajari pelepasan elektron akibat foton</p>
+                                    </div>
+                                </div>
+                                <button onclick="switchTab('modules')" class="px-3 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primaryHover transition-all">Pelajari</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl border border-gray-100 hover:border-indigo-200 transition-all flex items-center justify-between bg-surface/50">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
+                                        <i class="fa-solid fa-stopwatch"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-sm text-gray-900">2. Teori Relativitas Khusus</h4>
+                                        <p class="text-xs text-gray-500">Dilatasi waktu dan kontraksi panjang Lorentz</p>
+                                    </div>
+                                </div>
+                                <button onclick="switchTab('modules')" class="px-3 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primaryHover transition-all">Pelajari</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl border border-gray-100 hover:border-indigo-200 transition-all flex items-center justify-between bg-surface/50">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
+                                        <i class="fa-solid fa-radiation"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-sm text-gray-900">3. Radioaktivitas & Inti Atom</h4>
+                                        <p class="text-xs text-gray-500">Peluruhan alfa, beta, gamma serta energi ikat</p>
+                                    </div>
+                                </div>
+                                <button onclick="switchTab('modules')" class="px-3 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:bg-primaryHover transition-all">Pelajari</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Widget inside Dashboard -->
+                    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-bold text-base text-gray-900 mb-2">Catatan Cepat Terbaru</h3>
+                            <p class="text-xs text-gray-500 mb-4">Ringkasan pemikiran atau rumus pentingmu.</p>
+                            <div class="p-4 rounded-xl bg-amber-50/60 border border-amber-100 text-xs text-amber-900 leading-relaxed">
+                                "Energi foton ditentukan oleh $E = h \cdot f$. Semakin besar frekuensi cahaya, semakin besar energi kinetik elektron yang lepas."
+                            </div>
+                        </div>
+                        <button onclick="switchTab('worksheet')" class="w-full py-2.5 bg-surface text-gray-700 hover:bg-gray-200 text-xs font-semibold rounded-xl transition-all">
+                            Buka Lembar Kerja <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: MODULES -->
+            <div id="tab-modules" class="tab-content hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Modul Materi Pembelajaran</h2>
+                        <p class="text-xs text-gray-500">Pilih topik materi interaktif untuk memulai sesi belajar mendalam.</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="filterModules('all')" class="mod-filter px-4 py-2 bg-primary text-white text-xs font-semibold rounded-xl shadow-xs transition-all">Semua</button>
+                        <button onclick="filterModules('fisika')" class="mod-filter px-4 py-2 bg-white text-gray-600 hover:bg-gray-100 text-xs font-semibold rounded-xl border border-gray-200 transition-all">Fisika Kuantum</button>
+                        <button onclick="filterModules('kimia')" class="mod-filter px-4 py-2 bg-white text-gray-600 hover:bg-gray-100 text-xs font-semibold rounded-xl border border-gray-200 transition-all">Kimia Unsur</button>
+                    </div>
+                </div>
+
+                <!-- Module Detail Viewer / Content Area -->
+                <div id="module-viewer" class="bg-white rounded-2xl border border-gray-100 shadow-xs p-6 md:p-8 space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-6">
+                        <div>
+                            <span class="bg-indigo-50 text-indigo-600 text-xs font-semibold px-3 py-1 rounded-full">Topik 01</span>
+                            <h3 id="mod-title" class="text-2xl font-bold text-gray-900 mt-2">Efek Fotoelektrik & Dualisme Gelombang-Partikel</h3>
+                            <p class="text-xs text-gray-500 mt-1">Estimasi waktu baca: 10 Menit • Tingkat Kesulitan: Menengah</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button onclick="markModuleComplete()" id="complete-btn" class="px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100 text-xs font-semibold rounded-xl transition-all">
+                                <i class="fa-solid fa-check mr-1.5"></i> Tandai Selesai
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Content Text & Illustration -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                        <div class="lg:col-span-2 space-y-4 text-sm text-gray-700 leading-relaxed">
+                            <h4 class="font-bold text-base text-gray-900">1. Pengantar Konsep Dasar</h4>
+                            <p>Efek fotoelektrik adalah fenomena di mana elektron dikeluarkan dari permukaan suatu logam (biasanya logam alkali) ketika disinari dengan cahaya yang memiliki frekuensi tertentu di atas frekuensi ambang logam tersebut.</p>
+                            <p>Fenomena ini sempat membingungkan para fisikawan klasik karena teori gelombang cahaya Maxwell tidak dapat menjelaskan mengapa energi kinetik elektron yang terlepas hanya bergantung pada frekuensi cahaya, bukan pada intensitas (kecerahan) cahaya.</p>
+                            
+                            <h4 class="font-bold text-base text-gray-900 pt-2">2. Teori Foton Albert Einstein</h4>
+                            <p>Pada tahun 1905, Albert Einstein mengusulkan solusi revolusioner dengan menyatakan bahwa cahaya terdiri dari paket-paket energi diskrit yang disebut <strong>foton</strong>. Energi setiap foton dirumuskan sebagai:</p>
+                            <div class="bg-surface p-4 rounded-xl border border-gray-200 text-center font-mono font-bold text-indigo-600 my-3">
+                                E = h · f = (h · c) / λ
+                            </div>
+                            <p>Dimana <span class="font-semibold">h</span> adalah tetapan Planck ($6.626 \times 10^{-34} \text{ J}\cdot\text{s}$), <span class="font-semibold">f</span> adalah frekuensi, dan <span class="font-semibold">λ</span> adalah panjang gelombang.</p>
+                        </div>
+
+                        <!-- Interactive Simulation / Video Simulator Box -->
+                        <div class="bg-surface p-5 rounded-2xl border border-gray-200 space-y-4">
+                            <h4 class="font-bold text-sm text-gray-900 flex items-center">
+                                <i class="fa-solid fa-sliders text-indigo-600 mr-2"></i> Simulasi Interaktif Foton
+                            </h4>
+                            <p class="text-xs text-gray-500">Geser untuk mengubah frekuensi cahaya dan amati pelepasan elektron.</p>
+                            
+                            <!-- Canvas / Visual Representation -->
+                            <div class="w-full h-40 bg-indigo-950 rounded-xl relative overflow-hidden flex flex-col items-center justify-center text-white p-4 shadow-inner">
+                                <div id="sim-beam" class="absolute left-0 top-0 h-full w-full bg-gradient-to-r from-blue-500/20 to-transparent pointer-events-none transition-all duration-300"></div>
+                                <i id="sim-icon" class="fa-solid fa-bolt text-3xl text-amber-400 mb-2 transition-all"></i>
+                                <span id="sim-status" class="text-xs font-semibold text-emerald-400 bg-emerald-950/80 px-2 py-1 rounded-md border border-emerald-500/30">Elektron Terlepas!</span>
+                                <span class="text-[10px] text-gray-400 mt-2">Frekuensi: <span id="freq-val">6.0</span> × 10¹⁴ Hz</span>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-xs font-medium text-gray-600">
+                                    <span>Frekuensi Cahaya</span>
+                                    <span id="freq-display" class="font-bold text-indigo-600">6.0 Hz</span>
+                                </div>
+                                <input type="range" id="freqSlider" min="1" max="10" value="6" step="0.5" class="w-full accent-primary cursor-pointer" oninput="updateSimulation(this.value)">
+                            </div>
+                            
+                            <button onclick="playAudioSimulation()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition-all shadow-sm">
+                                <i class="fa-solid fa-volume-high mr-1.5"></i> Putar Simulasi Audio
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Module Selector List Bottom -->
+                    <div class="border-t border-gray-100 pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <button onclick="loadModule(1)" class="p-4 rounded-xl border border-indigo-200 bg-indigo-50/50 text-left transition-all">
+                            <span class="text-[10px] font-bold text-indigo-600 uppercase">Modul 1</span>
+                            <h5 class="font-bold text-sm text-gray-900 mt-1">Efek Fotoelektrik</h5>
+                        </button>
+                        <button onclick="loadModule(2)" class="p-4 rounded-xl border border-gray-200 hover:border-indigo-200 text-left transition-all bg-white">
+                            <span class="text-[10px] font-bold text-gray-500 uppercase">Modul 2</span>
+                            <h5 class="font-bold text-sm text-gray-900 mt-1">Teori Relativitas Khusus</h5>
+                        </button>
+                        <button onclick="loadModule(3)" class="p-4 rounded-xl border border-gray-200 hover:border-indigo-200 text-left transition-all bg-white">
+                            <span class="text-[10px] font-bold text-gray-500 uppercase">Modul 3</span>
+                            <h5 class="font-bold text-sm text-gray-900 mt-1">Radioaktivitas & Inti</h5>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: QUIZ & EVALUATION -->
+            <div id="tab-quiz" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 md:p-8 shadow-xs max-w-3xl mx-auto space-y-6">
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                        <div>
+                            <span class="bg-indigo-50 text-indigo-600 text-xs font-semibold px-3 py-1 rounded-full">Evaluasi Mandiri</span>
+                            <h2 class="text-xl font-bold text-gray-900 mt-2">Kuis Interaktif Fisika Kuantum</h2>
+                        </div>
+                        <div class="text-right">
+                            <span id="quiz-progress-label" class="text-xs font-bold text-gray-500">Soal 1 dari 4</span>
+                            <div class="w-24 bg-gray-200 rounded-full h-1.5 mt-1 overflow-hidden">
+                                <div id="quiz-bar" class="bg-primary h-1.5 rounded-full transition-all duration-300" style="width: 25%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Question Container -->
+                    <div id="quiz-container" class="space-y-6">
+                        <div id="question-text" class="text-base font-semibold text-gray-900 leading-relaxed">
+                            1. Apakah faktor utama yang menentukan besar energi kinetik elektron yang terlepas pada peristiwa efek fotoelektrik?
+                        </div>
+
+                        <div id="options-container" class="space-y-3">
+                            <!-- Options injected dynamically by JS -->
+                        </div>
+
+                        <div id="feedback-box" class="hidden p-4 rounded-xl text-xs font-medium"></div>
+
+                        <div class="flex justify-between pt-4 border-t border-gray-100">
+                            <button id="prev-quiz" onclick="prevQuestion()" disabled class="px-4 py-2 bg-gray-100 text-gray-400 text-xs font-semibold rounded-xl cursor-not-allowed transition-all">Sebelumnya</button>
+                            <button id="next-quiz" onclick="nextQuestion()" class="px-5 py-2 bg-primary hover:bg-primaryHover text-white text-xs font-semibold rounded-xl transition-all shadow-sm">Selanjutnya</button>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Score Result Card (Hidden by Default) -->
+                    <div id="quiz-result" class="hidden text-center py-8 space-y-4">
+                        <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto shadow-sm">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900">Kuis Selesai!</h3>
+                        <p class="text-xs text-gray-500 max-w-sm mx-auto">Kamu telah menyelesaikan seluruh soal evaluasi dengan hasil yang memuaskan.</p>
+                        <div class="inline-block bg-indigo-50 border border-indigo-100 px-6 py-3 rounded-2xl">
+                            <span class="text-xs text-indigo-600 font-semibold block">Skor Akhir Kamu</span>
+                            <span id="final-score" class="text-3xl font-extrabold text-primary">100</span>
+                        </div>
+                        <div class="pt-4 flex justify-center space-x-3">
+                            <button onclick="restartQuiz()" class="px-5 py-2.5 bg-primary text-white text-xs font-semibold rounded-xl hover:bg-primaryHover transition-all">Ulangi Kuis</button>
+                            <button onclick="switchTab('dashboard')" class="px-5 py-2.5 bg-surface text-gray-700 text-xs font-semibold rounded-xl hover:bg-gray-200 transition-all">Kembali ke Beranda</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: WORKSHEET & NOTES -->
+            <div id="tab-worksheet" class="tab-content hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Lembar Kerja & Catatan Digital Siswa</h2>
+                        <p class="text-xs text-gray-500">Tulis catatan pribadi, rumus penting, atau jawaban eksperimenmu di sini secara real-time.</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="saveNotes()" class="px-4 py-2 bg-primary hover:bg-primaryHover text-white text-xs font-semibold rounded-xl transition-all shadow-sm flex items-center">
+                            <i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Catatan
+                        </button>
+                        <button onclick="clearNotes()" class="px-4 py-2 bg-white border border-gray-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold rounded-xl transition-all flex items-center">
+                            <i class="fa-solid fa-trash mr-1.5"></i> Hapus
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Main Textarea Editor -->
+                    <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-4">
+                        <div class="flex items-center justify-between">
+                            <input type="text" id="note-title" value="Catatan Fisika Kuantum - Pertemuan 3" class="font-bold text-base text-gray-900 bg-transparent border-b border-transparent focus:border-indigo-300 focus:outline-none w-full pb-1">
+                            <span id="save-status" class="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full shrink-0">Tersimpan</span>
+                        </div>
+                        <textarea id="note-content" rows="12" class="w-full bg-surface/60 rounded-xl p-4 text-sm text-gray-700 leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white border border-transparent focus:border-indigo-200 transition-all resize-none" placeholder="Tulis catatan pelajaran, rumus, atau kesimpulan eksperimen di sini...">Poin Penting Belajar Hari Ini:
+1. Efek fotoelektrik membuktikan bahwa cahaya memiliki sifat partikel (foton).
+2. Frekuensi ambang (f0) adalah frekuensi minimum yang diperlukan agar elektron dapat lepas dari permukaan logam.
+3. Energi Kinetik Maksimum Elektron: Ek = E - W (dimana W adalah fungsi kerja logam).
+
+Catatan Tugas:
+- Mengerjakan LKS halaman 45 tentang Teori Relativitas Khusus sebelum hari Kamis.</textarea>
+                    </div>
+
+                    <!-- Quick Sticky Notes / Templates -->
+                    <div class="space-y-4">
+                        <div class="bg-amber-50 border border-amber-200/60 rounded-2xl p-5 space-y-3 shadow-xs">
+                            <div class="flex items-center space-x-2 text-amber-800 font-bold text-xs">
+                                <i class="fa-solid fa-note-sticky"></i>
+                                <span>Tips Belajar Efektif</span>
+                            </div>
+                            <p class="text-xs text-amber-900/80 leading-relaxed">
+                                Gunakan teknik ringkasan mandiri setelah menonton simulasi agar pemahaman konsep fisika melekat lebih lama di memori jangka panjang!
+                            </p>
+                        </div>
+
+                        <div class="bg-white border border-gray-100 rounded-2xl p-5 space-y-3 shadow-xs">
+                            <h4 class="font-bold text-xs text-gray-900 uppercase tracking-wide">Template Rumus Cepat</h4>
+                            <div class="space-y-2 text-xs">
+                                <button onclick="insertTemplate('E = h * f')" class="w-full text-left p-2.5 rounded-xl bg-surface hover:bg-gray-100 font-mono text-indigo-600 transition-all">
+                                    • E = h · f (Energi Foton)
+                                </button>
+                                <button onclick="insertTemplate('Ek = h*f - W')" class="w-full text-left p-2.5 rounded-xl bg-surface hover:bg-gray-100 font-mono text-indigo-600 transition-all">
+                                    • Ek = h·f - W (Energi Kinetik)
+                                </button>
+                                <button onclick="insertTemplate('λ = h / p')" class="w-full text-left p-2.5 rounded-xl bg-surface hover:bg-gray-100 font-mono text-indigo-600 transition-all">
+                                    • λ = h / p (Panjang Gelombang de Broglie)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Navigation Tab Switching
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            // Show selected tab
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            // Update active nav styling
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('bg-primary', 'text-white', 'shadow-sm', 'shadow-indigo-100');
+                link.classList.add('text-gray-600', 'hover:bg-gray-50', 'hover:text-gray-900');
+                if(link.getAttribute('data-target') === tabId) {
+                    link.classList.remove('text-gray-600', 'hover:bg-gray-50', 'hover:text-gray-900');
+                    link.classList.add('bg-primary', 'text-white', 'shadow-sm', 'shadow-indigo-100');
+                }
+            });
+
+            // Update header titles
+            const titles = {
+                dashboard: { title: 'Beranda Overview', subtitle: 'Selamat datang kembali, mari lanjutkan petualangan belajarmu hari ini!' },
+                modules: { title: 'Modul Pembelajaran', subtitle: 'Pelajari konsep interaktif dengan materi mendalam dan simulasi.' },
+                quiz: { title: 'Kuis & Evaluasi', subtitle: 'Uji pemahamanmu dan dapatkan umpan balik instan.' },
+                worksheet: { title: 'Lembar Kerja & Catatan', subtitle: 'Catat rumus penting dan ringkasan belajarmu di sini.' }
+            };
+            if(titles[tabId]) {
+                document.getElementById('page-title').innerText = titles[tabId].title;
+                document.getElementById('page-subtitle').innerText = titles[tabId].subtitle;
+            }
+
+            // Close mobile sidebar if open
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+        }
+
+        // Mobile Sidebar Toggle
+        document.getElementById('openSidebar').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+        });
+        document.getElementById('closeSidebar').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+        });
+
+        // Module Simulation Interactive Function
+        function updateSimulation(val) {
+            document.getElementById('freq-val').innerText = val;
+            document.getElementById('freq-display').innerText = val + ' Hz';
+            const beam = document.getElementById('sim-beam');
+            const icon = document.getElementById('sim-icon');
+            const status = document.getElementById('sim-status');
+
+            if(val >= 5) {
+                beam.style.opacity = '1';
+                icon.className = 'fa-solid fa-bolt text-3xl text-amber-400 mb-2 animate-bounce';
+                status.innerText = 'Elektron Terlepas!';
+                status.className = 'text-xs font-semibold text-emerald-400 bg-emerald-950/80 px-2 py-1 rounded-md border border-emerald-500/30';
+            } else {
+                beam.style.opacity = '0.3';
+                icon.className = 'fa-solid fa-shield text-3xl text-gray-400 mb-2';
+                status.innerText = 'Frekuensi Terlalu Rendah (Elektron Tertahan)';
+                status.className = 'text-xs font-semibold text-rose-400 bg-rose-950/80 px-2 py-1 rounded-md border border-rose-500/30';
+            }
+        }
+
+        function playAudioSimulation() {
+            // Simulated Audio feedback via Web Audio API beep
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5 note
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } catch(e) {
+                console.log('Audio not supported or blocked');
+            }
+        }
+
+        function markModuleComplete() {
+            const btn = document.getElementById('complete-btn');
+            btn.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i> Selesai Dipelajari';
+            btn.className = 'px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-xl shadow-sm transition-all';
+            
+            // Update progress bar
+            document.getElementById('sidebar-progress').style.width = '80%';
+            document.getElementById('sidebar-progress-text').innerText = '80%';
+        }
+
+        function loadModule(num) {
+            const titles = {
+                1: "Efek Fotoelektrik & Dualisme Gelombang-Partikel",
+                2: "Teori Relativitas Khusus & Dilatasi Waktu",
+                3: "Radioaktivitas & Peluruhan Inti Atom"
+            };
+            document.getElementById('mod-title').innerText = titles[num] || "Modul Pembelajaran";
+        }
+
+        function filterModules(category) {
+            document.querySelectorAll('.mod-filter').forEach(btn => {
+                btn.className = 'mod-filter px-4 py-2 bg-white text-gray-600 hover:bg-gray-100 text-xs font-semibold rounded-xl border border-gray-200 transition-all';
+            });
+            event.target.className = 'mod-filter px-4 py-2 bg-primary text-white text-xs font-semibold rounded-xl shadow-xs transition-all';
+        }
+
+        // Quiz Logic
+        const quizData = [
+            {
+                question: "1. Apakah faktor utama yang menentukan besar energi kinetik elektron yang terlepas pada peristiwa efek fotoelektrik?",
+                options: [
+                    "Intensitas atau kecerahan cahaya",
+                    "Frekuensi atau panjang gelombang cahaya",
+                    "Luas permukaan keping logam",
+                    "Massa jenis logam yang digunakan"
+                ],
+                answer: 1
+            },
+            {
+                question: "2. Siapakah fisikawan yang pertama kali menjelaskan teori foton untuk memecahkan misteri efek fotoelektrik pada tahun 1905?",
+                options: [
+                    "Isaac Newton",
+                    "Niels Bohr",
+                    "Albert Einstein",
+                    "Max Planck"
+                ],
+                answer: 2
+            },
+            {
+                question: "3. Dalam persamaan energi foton E = h · f, apakah arti dari konstanta h?",
+                options: [
+                    "Tetapan Planck",
+                    "Kecepatan Cahaya",
+                    "Muatan Elektron",
+                    "Konstanta Gravitasi"
+                ],
+                answer: 0
+            },
+            {
+                question: "4. Apa yang terjadi jika frekuensi cahaya yang menyinari logam berada di bawah frekuensi ambang (f0)?",
+                options: [
+                    "Elektron akan lepas dengan kecepatan tinggi",
+                    "Elektron akan terlepas dalam jumlah sangat banyak",
+                    "Tidak ada elektron yang dapat terlepas dari permukaan logam",
+                    "Logam akan mencair seketika"
+                ],
+                answer: 2
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = {};
+
+        function renderQuiz() {
+            const q = quizData[currentQuestionIndex];
+            document.getElementById('question-text').innerText = q.question;
+            document.getElementById('quiz-progress-label').innerText = `Soal ${currentQuestionIndex + 1} dari ${quizData.length}`;
+            document.getElementById('quiz-bar').style.width = `${((currentQuestionIndex + 1) / quizData.length) * 100}%`;
+
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const isSelected = userAnswers[currentQuestionIndex] === idx;
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-4 rounded-xl border text-xs font-medium transition-all flex items-center justify-between ${
+                    isSelected ? 'border-primary bg-indigo-50/50 text-indigo-900 font-semibold' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                }`;
+                btn.innerHTML = `<span>${opt}</span> <div class="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center ${isSelected ? 'border-primary bg-primary text-white text-[10px]' : ''}">${isSelected ? '✓' : ''}</div>`;
+                btn.onclick = () => selectOption(idx);
+                optsContainer.appendChild(btn);
+            });
+
+            document.getElementById('prev-quiz').disabled = currentQuestionIndex === 0;
+            if(currentQuestionIndex === 0) {
+                document.getElementById('prev-quiz').className = 'px-4 py-2 bg-gray-100 text-gray-400 text-xs font-semibold rounded-xl cursor-not-allowed transition-all';
+            } else {
+                document.getElementById('prev-quiz').className = 'px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-semibold rounded-xl transition-all';
+            }
+
+            const feedbackBox = document.getElementById('feedback-box');
+            if(userAnswers[currentQuestionIndex] !== undefined) {
+                showFeedback(userAnswers[currentQuestionIndex]);
+            } else {
+                feedbackBox.classList.add('hidden');
+            }
+        }
+
+        function selectOption(idx) {
+            userAnswers[currentQuestionIndex] = idx;
+            renderQuiz();
+            showFeedback(idx);
+        }
+
+        function showFeedback(selectedIdx) {
+            const q = quizData[currentQuestionIndex];
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.remove('hidden');
+
+            if(selectedIdx === q.answer) {
+                feedbackBox.className = 'p-4 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200';
+                feedbackBox.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> <strong>Benar!</strong> Analisis jawabanmu sudah tepat.';
+            } else {
+                feedbackBox.className = 'p-4 rounded-xl text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200';
+                feedbackBox.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600 mr-1.5"></i> <strong>Kurang tepat.</strong> Jawaban yang benar adalah: <span class="font-semibold">' + q.options[q.answer] + '</span>';
+            }
+        }
+
+        function nextQuestion() {
+            if(currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                renderQuiz();
+            } else {
+                // Calculate score
+                score = 0;
+                quizData.forEach((q, idx) => {
+                    if(userAnswers[idx] === q.answer) score += 25;
+                });
+                document.getElementById('quiz-container').classList.add('hidden');
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('final-score').innerText = score;
+            }
+        }
+
+        function prevQuestion() {
+            if(currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuiz();
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            renderQuiz();
+        }
+
+        // Worksheet Notes Logic
+        function saveNotes() {
+            const status = document.getElementById('save-status');
+            status.innerText = 'Menyimpan...';
+            setTimeout(() => {
+                status.innerText = 'Tersimpan';
+            }, 600);
+        }
+
+        function clearNotes() {
+            if(confirm('Apakah kamu yakin ingin mengosongkan catatan ini?')) {
+                document.getElementById('note-content').value = '';
+            }
+        }
+
+        function insertTemplate(text) {
+            const textarea = document.getElementById('note-content');
+            textarea.value += '\n\nRumus Catatan:\n' + text;
+        }
+
+        // Initialize Quiz on load
+        window.onload = function() {
+            renderQuiz();
+        };
+    </script>
+</body>
+</html>
